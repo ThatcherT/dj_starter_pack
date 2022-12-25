@@ -1,20 +1,15 @@
 # This is a command line utility to facilitate the creation of a new Django Project
 # Some actions include:
-# 1. Rename the Project
-# 2. Rename the first App
-# 3. Generate more apps as requested
+# 1. Initialize Project from assets
+# 2. Generate a new SECRET_KEY add to .env
+# 2. Generate Apps from assets
 # 3. Remove the Users App if prompted
-# 4. Generate a new SECRET_KEY
-# 5. Rename numerous things in certain files
 # 6. Create passwords for postgres, redis
-# 7. Create a new git repo
 # 8. Renaming various files throughout the repo based on Project name
 
 
 import os
-from utils.secret import generate_secret_key
-from utils.general import welcome
-from utils.rename import rename_project, make_apps
+from utils.main import Project
 
 
 def main():
@@ -23,12 +18,22 @@ def main():
     """
     # set the working directory to the directory of this file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    proj = Project()
+    proj.welcome()
 
-    welcome()
+    proj.rename_project()
 
-    project_name = rename_project()
+    proj.make_apps()
 
-    app_lst = make_apps(project_name)
+    proj.redis()
+
+    proj.scheduler()
+
+    proj.docker()
+
+    proj.postgres()
+
+    print("Initialize pre-commit with command pre-commit --install .")
 
     # TODO: remove_assets_and_utils
 
