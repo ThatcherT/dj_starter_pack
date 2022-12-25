@@ -12,18 +12,10 @@
 
 
 import os
-import sys
-import shutil
-import random
-import string
-import subprocess
-import argparse
-import json
-from pathlib import Path
-import re
 from utils.secret import generate_secret_key
 from utils.general import welcome
-from utils.rename import rename_project, rename_app, rename_files
+from utils.rename import rename_project, make_apps
+
 
 def main():
     """
@@ -33,41 +25,12 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     welcome()
-    
-    
 
-    apps_created = 0
-    apps = []
-    while True:
+    project_name = rename_project()
 
-        if apps_created:  # code golf
-            additional_app_name = input(
-                f"2/8. App Name #{apps_created + 1}(Press Enter to Continue...): "
-            )
-            if not additional_app_name:
-                break
-            else:
-                if additional_app_name in apps:
-                    print("App name already exists.")
-                    continue
-                apps.append(additional_app_name)
+    app_lst = make_apps(project_name)
 
-        else:
-            first_app_name = input("2/8. App Name: ")
-            apps.append(first_app_name)
-        apps_created += 1
-        break
-    # copy the app_0 folder to the new project folder
-    for app in apps:
-        shutil.copytree("./app_0", f"./{app}")
-        # project_name replacement rename files
-        files_to_change = [f"./{app}/apps.py"]
-        for file in files_to_change:
-            with open(file, "rw") as f:
-                filedata = f.read()
-                filedata = filedata.replace("app_0", app)
-                filedata = filedata.replace("app0", app)
-                f.write(filedata)
+    # TODO: remove_assets_and_utils
 
 
 if __name__ == "__main__":
