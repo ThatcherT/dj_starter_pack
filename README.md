@@ -1,0 +1,2 @@
+# Django Starter Pack
+This is a starter pack for Django projects. It includes a basic Django project with a few handy connections out of the box. To get started, run `python bang.py`, and follow the prompts.
