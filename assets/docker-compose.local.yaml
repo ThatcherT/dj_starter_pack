@@ -1,0 +1,66 @@
+version: "3"
+
+volumes:
+  pgdata:
+  redisdata:
+
+services:
+  spotifly:
+    restart: always
+    build: .
+    image: thatcherthornberry/spotifly:latest
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app/spotifly
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+      - SPOTIFY_REDIRECT_URI=http://0.0.0.0:8000/redirect
+    depends_on:
+      - postgres
+  postgres:
+    restart: always
+    image: postgres:12.0-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=postgres
+  redis:
+    restart: always
+    image: redis:6
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - redisdata:/data
+  # TODO: refactor these to their own repo or something
+  scheduler:
+    restart: always
+    image: thatcherthornberry/spotifly:latest
+    command: python manage.py rqscheduler --queue default
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+    depends_on:
+      - "redis"
+
+  # TODO: refactor these to their own repo or something
+  worker:
+    restart: always
+    image: thatcherthornberry/spotifly:latest
+    command: python manage.py rqworker default
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+    depends_on:
+      - "redis"

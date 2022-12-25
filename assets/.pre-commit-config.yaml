@@ -1,0 +1,32 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  # pre-commit babee (das konkreet)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+  # Python linter
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+  # security linter
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.6.2
+    hooks:
+      - id: bandit
+        args: ["-iii", "-ll"]
+  # py import sorter
+  - repo: https://github.com/pycqa/isort
+    rev: 5.7.0
+    hooks:
+      - id: isort
+  # js linter
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.7.0 # Use the sha / tag you want to point at
+    hooks:
+      - id: prettier
