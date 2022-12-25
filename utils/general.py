@@ -9,12 +9,14 @@ def welcome():
         "You are a great developer.",
         "Python is my love language.",
         "Don't forget to drink water.",
-        "Remmember your ambitions.",
+        "Remember your ambitions.",
+        "Starting things is fun!",
     ]
     print(random.choice(welcome_messages))
 
+
 def add_secret_key():
-    "open .env, generate SECRET_KEY, write to .env"
+    "open .env, generate SECRET_KEY, write to .env, return secret"
     with open("./.env", "rw") as f:
         secret_key = generate_secret_key()
         # write
