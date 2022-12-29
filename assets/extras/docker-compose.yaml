@@ -1,24 +1,25 @@
 version: "3"
 
 volumes:
-  pgdata:
-  redisdata:
+  pgdata: null
+  redisdata: null
+  static_spotifly: null
 
 services:
   spotifly:
     restart: always
-    build: .
+    build: ./projects/spotifly
     image: thatcherthornberry/spotifly:latest
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
-    ports:
-      - "8000:8000"
+    command: bash -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn music.wsgi:application --bind 0.0.0.0:8001"
+    expose:
+      - 8001
     volumes:
-      - .:/app/spotifly
+      - static_spotifly:/app/spotifly/staticfiles
     env_file:
-      - .env
-    environment:
-      - DOCKER_LOCAL=True
-      - SPOTIFY_REDIRECT_URI=http://0.0.0.0:8000/redirect
+      - ./projects/spotifly/.env
     depends_on:
       - postgres
   postgres:
@@ -30,37 +31,27 @@ services:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     env_file:
       - .env
-    environment:
-      - POSTGRES_HOST=postgres
   redis:
     restart: always
     image: redis:6
-    command: >
-      --requirepass ${REDIS_PASSWORD}
+    command: --requirepass ${REDIS_PASSWORD}
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     volumes:
       - redisdata:/data
-  # TODO: refactor these to their own repo or something
   scheduler:
     restart: always
     image: thatcherthornberry/spotifly:latest
     command: python manage.py rqscheduler --queue default
     env_file:
       - .env
-    environment:
-      - DOCKER_LOCAL=True
     depends_on:
       - "redis"
-
-  # TODO: refactor these to their own repo or something
   worker:
     restart: always
     image: thatcherthornberry/spotifly:latest
     command: python manage.py rqworker default
     env_file:
       - .env
-    environment:
-      - DOCKER_LOCAL=True
     depends_on:
       - "redis"

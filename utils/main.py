@@ -1,13 +1,15 @@
 import random
 import os
 import shutil
-
-
+import secrets
+from utils.configs import POSTGRES, POSTGRES_COMPOSE, REDIS, REDIS_COMPOSE, RQ_SCHEDULER, RQ_SCHEDULER_COMPOSE
 class Project:
     "This small class facilitates the manipulation of assets to output a custom built project"
 
     def __init__(self):
         self.asset_files = ["assets", "utils", ".gitignore", "README.md", "bang.py", ".git"]
+        self.project_name = ''
+        self.apps = []
         pass
 
     def welcome(self):
@@ -39,7 +41,6 @@ class Project:
             # write
             dj_secret = f"DJANGO_SECRET_KEY={secret_key}"
             f.write(dj_secret)
-        return secret_key
 
     def rename_project(self):
         while True:
@@ -64,12 +65,11 @@ class Project:
                     with open(file, "r") as f:
                         filedata = f.read()
                     filedata = filedata.replace("dj_starter_pack", project_name)
-                    if file == f"./{project_name}/settings.py":
-                        filedata = filedata.replace("dsp_key", self._add_secret_key())
                     with open(file, "w") as f:
                         f.write(filedata)
                 break
         self.project_name = project_name
+        self._add_secret_key
 
     def make_apps(self):
         apps_created = 0
@@ -105,3 +105,19 @@ class Project:
                 with open(file, "w") as f:
                     f.write(filedata)
         self.apps = apps
+        self._add_apps_to_settings()
+
+    def _add_apps_to_settings():
+        with open(f'./{self.project_name}/settings.py', 'r')
+            # TODO: some regex to find INSTALLED_APPS = [...]
+            # convert to python list
+            # TODO: some regex to find "DIRS": [...]
+            # convert to python list
+            for app in self.apps:
+                # add each app to DIRS
+                # add {app}.apps.{CamelCasify(app)Config} 
+        with open(f'./{self.project_name}/settings.py', 'r')
+    
+    def _add_redis_to_settings():
+        REDIS_SETTINGS=
+

@@ -1,0 +1,17 @@
+services:
+  $PROJECT_NAME:
+    restart: always
+    build: .
+    image: $PROJECT_NAME:latest
+    command: bash -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn $PROJECT_NAME.wsgi:application --bind 0.0.0.0:8001"
+    expose:
+      - 8001
+    volumes:
+      - static_$PROJECT_NAME:/app/$PROJECT_NAME/staticfiles
+    env_file:
+      - .env
+    depends_on:
+      - postgres

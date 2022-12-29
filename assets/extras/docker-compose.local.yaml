@@ -1,0 +1,23 @@
+version: "3"
+
+volumes:
+  pgdata:
+  redisdata:
+
+services:
+  spotifly:
+    restart: always
+    build: .
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app/dj_starter_pack
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+    depends_on:
+      - postgres
+  
+  

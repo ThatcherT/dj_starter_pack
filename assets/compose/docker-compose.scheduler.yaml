@@ -1,0 +1,21 @@
+services:
+  scheduler:
+    restart: always
+    image: $PROJECT_NAME:latest
+    command: python manage.py rqscheduler --queue default
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+    depends_on:
+      - "redis"
+  worker:
+    restart: always
+    image: $PROJECT_NAME:latest
+    command: python manage.py rqworker default
+    env_file:
+      - .env
+    environment:
+      - DOCKER_LOCAL=True
+    depends_on:
+      - "redis"

@@ -1,0 +1,14 @@
+volumes:
+  redisdata:
+
+services:
+  redis:
+      restart: always
+      image: redis:6
+      command: --requirepass ${REDIS_PASSWORD}
+      ports:
+        - ${REDIS_PORT}:${REDIS_PORT}
+      volumes:
+        - redisdata:/data
+      env_file:
+        .env

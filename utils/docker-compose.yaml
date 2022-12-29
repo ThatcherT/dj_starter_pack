@@ -1,0 +1,23 @@
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+    - 80:80
+    - 443:443
+    restart: always
+    volumes:
+    - static_$PROJECT_NAME:/app/$PROJECT_NAME/staticfiles
+    - ./nginx:/etc/nginx/conf.d
+  postgres:
+    env_file:
+    - .env
+    environment:
+    - POSTGRES_HOST=postgres
+    image: postgres:12.0-alpine
+    ports:
+    - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    restart: always
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata: null

@@ -1,0 +1,15 @@
+volumes:
+  pgdata:
+
+services:
+  postgres:
+    restart: always
+    image: postgres:12.0-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=postgres
