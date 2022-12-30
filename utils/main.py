@@ -203,6 +203,21 @@ class Project:
                 f.write('EMAIL_HOST_PASSWORD=')
             if 'redis' in self.services:
                 f.write('REDIS_PASSWORD=')
+    
+    def _requirements(self):
+        """Creates a requirements.txt file with the project name and folder structure"""
+        with open("./assets/extras/requirements.main.txt", "r") as f:
+            requirements_data = f.read()
+        if 'redis' in self.services:
+            with open("./assets/extras/requirements.redis.txt", "r") as f:
+                requirements_data += f.read()
+            if 'scheduler' in self.services:
+                with open("./assets/extras/requirements.scheduler.txt", "r") as f: 
+                    requirements_data += f.read()
+
+
+        with open("./requirements.txt", "w") as f:
+            f.write(requirements_data)
 
     def projectify(self):
         """Use the set configuration to create and manipulate the files for the project template"""
