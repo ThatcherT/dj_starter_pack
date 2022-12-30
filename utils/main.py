@@ -16,12 +16,14 @@ class Project:
 
     def __init__(self):
         self.asset_files = [
+            '.pre-commit-config.yaml'
             "assets",
             "utils",
             ".gitignore",
             "README.md",
             "bang.py",
             ".git",
+            "Makefile",
         ]
         self.services = ["nginx", "postgres", "django"]
         self.site_name = ""
@@ -42,23 +44,19 @@ class Project:
         ]
         print(random.choice(welcome_messages))
 
-    def _unbang(self):
+    def unbang(self):
         "removes created assets in the project"
-        files = os.listdir(".")
-        for file in files:
+        # iterate through the root level directory
+        for file in os.listdir():
             if file not in self.asset_files:
-                try:
+                if os.path.isdir(file):
+                    shutil.rmtree(file)
+                else:
                     os.remove(file)
-                except:
-                    print("Reminder to make this work for folders..")
 
     def rename_project(self):
         while True:
             self.project_name = input("1/8. Project Name: ")
-            if self.project_name == "-":
-                self._unbang()
-                exit()
-
             if self.project_name:
                 break
 
@@ -100,6 +98,11 @@ class Project:
         email = input("7/8. Email? (y/n): ")
         if email == "y":
             self.service_settings.append(EMAIL)
+
+    def _makefile(self):
+        """Build project Makefile Replace dj_starter_kit makefile with project Makefile"""
+        # TODO:
+        
 
     def _nginx(self):
         """Copies nginx.conf to project root, modifies file with updated vars"""
@@ -151,10 +154,28 @@ class Project:
         app_lst = installed_apps.split(",")
         for app in self.apps:
             app_lst.append(f'"{app}.apps.{self._camel_casify(app)}Config"')
+        if "scheduler" in self.services:
+            app_lst.append('"django_rq"')
         app_lst = ", ".join(app_lst)
         settings_data = settings_data.replace(installed_apps, app_lst)
         with open(f"./{self.project_name}/settings.py", "w") as f:
             f.write(settings_data)
+
+    def _update_urls(self):
+        """Adds app urls to project urls.py"""
+        with open(f"./{self.project_name}/urls.py", "r") as f:
+            urls_data = f.read()
+        # add apps to urlpatterns
+        url_patterns = urls_data.split("urlpatterns = [")[1].split("]")[0]
+        url_lst = url_patterns.split(",")
+        for app in self.apps:
+            url_lst.append(f'path("", include("{app}.urls"))')
+        if "scheduler" in self.services:
+            url_lst.append('path("django-rq/", include("django_rq.urls"))')
+        url_lst = ", ".join(url_lst)
+        urls_data = urls_data.replace(url_patterns, url_lst)
+        with open(f"./{self.project_name}/urls.py", "w") as f:
+            f.write(urls_data)
 
     def _camel_casify(self, s):
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
@@ -180,6 +201,7 @@ class Project:
             filedata = filedata.replace("dj_starter_pack", self.project_name)
             with open(file, "w") as f:
                 f.write(filedata)
+
     def _copy_apps(self):
         # copy the app_0 folder to the new project folder
         for app in self.apps:
@@ -192,29 +214,60 @@ class Project:
 
     def _env(self):
         """Creates .env file with required variables"""
-        with open('./.env', 'w') as f:
-            f.write('DJANGO_SECRET_KEY=' + secrets.token_urlsafe())
-            f.write('DEBUG=True')
-            f.write('DB_NAME=')
-            f.write('POSTGRES_USER=')
-            f.write('POSTGRES_PASSWORD=')
-            if 'email' in self.service_settings:
-                f.write('EMAIL_HOST_USER=')
-                f.write('EMAIL_HOST_PASSWORD=')
-            if 'redis' in self.services:
-                f.write('REDIS_PASSWORD=')
-    
+        with open("./.env", "w") as f:
+            f.write("DJANGO_SECRET_KEY=" + secrets.token_urlsafe())
+            f.write("DEBUG=True")
+            f.write("DB_NAME=")
+            f.write("POSTGRES_USER=")
+            f.write("POSTGRES_PASSWORD=")
+            if "email" in self.service_settings:
+                f.write("EMAIL_HOST_USER=")
+                f.write("EMAIL_HOST_PASSWORD=")
+            if "redis" in self.services:
+                f.write("REDIS_PASSWORD=")
+
+    def _get_folder_structure(self):
+        """
+        This function returns the folder structure of the project in ascii
+        """
+        folder_struct = ""
+        path = os.getcwd()
+        for root, dirs, files in os.walk(path):
+            # if .git continue
+            if ".git" in root:
+                continue
+            level = root.replace(path, "").count(os.sep)
+            indent = " " * 4 * (level)
+            folder_struct += "{}{}/".format(indent, os.path.basename(root))
+            subindent = " " * 4 * (level + 1)
+            for f in files:
+                folder_struct += "{}{}".format(subindent, f)
+        return folder_struct
+
+    def _readme(self):
+        """Creates a README.md file with the project name and folder structure"""
+        project_desc = input("One sentence to describer this project: ")
+        with open("../assets/extras/README.md", "r") as f:
+            readme_data = f.read()
+        readme_data = readme_data.replace(
+            "dj_starter_pack_folder_structure", self._get_folder_structure()
+        )
+        readme_data = readme_data.replace("dj_starter_pack", self.project_name)
+        readme_data = readme_data.replace("dj_starter_pack_one_liner", project_desc)
+
+        with open("./README.md", "w") as f:
+            f.write(readme_data)
+
     def _requirements(self):
         """Creates a requirements.txt file with the project name and folder structure"""
-        with open("./assets/extras/requirements.main.txt", "r") as f:
+        with open("./assets/requirements/requirements.main.txt", "r") as f:
             requirements_data = f.read()
-        if 'redis' in self.services:
-            with open("./assets/extras/requirements.redis.txt", "r") as f:
+        if "redis" in self.services:
+            with open("./assets/requirements/requirements.redis.txt", "r") as f:
                 requirements_data += f.read()
-            if 'scheduler' in self.services:
-                with open("./assets/extras/requirements.scheduler.txt", "r") as f: 
+            if "scheduler" in self.services:
+                with open("./assets/requirements/requirements.scheduler.txt", "r") as f:
                     requirements_data += f.read()
-
 
         with open("./requirements.txt", "w") as f:
             f.write(requirements_data)
@@ -228,7 +281,10 @@ class Project:
         self._nginx()
         self._docker()
         self._env()
+        self._requirements()
 
     def destroy(self):
-        """Deletes all of the files used to """
-        pass
+        """Deletes all of the files used to"""
+        self._readme()
+        shutil.rmtree("./assets")
+        shutil.rmtree("./utils")

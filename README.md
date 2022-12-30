@@ -5,4 +5,9 @@ To get started, run `python bang.py`, and follow the prompts.
 
 NOTE: If this is your first time using Django, start a project using their fantastic [tutorial][TODO]
 
-TODO: black format rules
+# TODO:
+pre-commit folder_structure generator hook ```folder_struct```
+Makefile
+Bootstrap
+RQ Scheduler Examples
+Template Examples

@@ -10,31 +10,48 @@
 
 import os
 from utils.main import Project
+import argparse
 
 
 def main():
-    """
-    This function facilitates command prompt input and calls different utilities after the data is received.
-    """
-    # set the working directory to the directory of this file
+    """This function facilitates command prompt input and calls different utilities after the data is received."""
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     proj = Project()
-    
     proj.welcome()
-
     proj.rename_project()
-
     proj.create_apps()
-
     proj.set_services()
-
     proj.projectify()
-    
 
-    print("Initialize pre-commit with command pre-commit --install .")
-
-    # TODO: remove_assets_and_utils
+    print("Successfully created project: ", proj.project_name)
+    print(f"With services: {', '.join([service for service in proj.services])}")
+    print(
+        "If you are satisified, delete the dj_starter_pack assets with `python bang.py --destroy`"
+    )
+    print(
+        "If you are not satisfied, delete the created resources with `python bang.py --unbang`"
+    )
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--destroy", help="Destroy the dj_starter_pack assets", action="store_true"
+    )
+    parser.add_argument(
+        "--unbang", help="Remove created resources.", action="store_true"
+    )
+    args = parser.parse_args()
+    if args.destroy:
+        print("Destroying the project.")
+        proj = Project()
+        proj.destroy()
+        print("Thanks for using dj_starter_pack.")
+    elif args.unbang:
+        print("Removing created resources.")
+        proj = Project()
+        proj.unbang()
+        print("Run python bang.py to start over.")
+    else:
+        main()
