@@ -3,11 +3,12 @@
 import os
 import yaml
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-
-def aggregate(services=["postgres", "nginx", "django"]):
+def aggregate(services, project_name):
     """Takes a list of services and uses existing compose files to aggregate into single file"""
+    # set the working directory to the directory of this file
+    # get current working directory
+    cwd = os.getcwd()
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     yml = {
         "volumes": {},
         "services": {},
@@ -23,6 +24,13 @@ def aggregate(services=["postgres", "nginx", "django"]):
     yml["version"] = 3
     with open("../docker-compose.yaml", "w") as yml_compiled:
         yaml.dump(yml, yml_compiled, default_flow_style=False)
+    with open("../docker-compose.yaml", "r") as f:
+        filedata = f.read()
+    # replace the project name
+    filedata = filedata.replace("$PROJECT_NAME", project_name)
+
+    # cahnge the working directory back to the original
+    os.chdir(cwd)
 
 
 if __name__ == "__main__":

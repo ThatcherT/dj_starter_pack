@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 
@@ -26,7 +26,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY", cast=str)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]  # TODO: you should probably address this
 
 LOGGING = {
     "version": 1,
@@ -89,8 +89,12 @@ WSGI_APPLICATION = "dj_starter_pack.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DB_NAME", cast=str),
+        "USER": config("POSTGRES_USER", cast=str),
+        "PASSWORD": config("POSTGRES_PASSWORD", cast=str),
+        "HOST": "postgres", # this is the name of the container
+        "PORT": 5432,
     }
 }
 
@@ -122,8 +126,8 @@ USE_I18N = True
 USE_TZ = True
 
 # static
-STATIC_URL = "/staticfiles/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = "/staticfiles/" # referenced in the nginx file
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") # referenced in docker-compose
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

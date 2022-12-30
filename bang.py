@@ -19,19 +19,17 @@ def main():
     # set the working directory to the directory of this file
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     proj = Project()
+    
     proj.welcome()
 
     proj.rename_project()
 
-    proj.make_apps()
+    proj.create_apps()
 
-    proj.redis()
+    proj.set_services()
 
-    proj.scheduler()
-
-    proj.docker()
-
-    proj.postgres()
+    proj.projectify()
+    
 
     print("Initialize pre-commit with command pre-commit --install .")
 
