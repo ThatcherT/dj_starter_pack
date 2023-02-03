@@ -28,9 +28,9 @@ def aggregate(services, project_name):
         filedata = f.read()
     # replace the project name
     filedata = filedata.replace("$PROJECT_NAME", project_name)
-
-    # cahnge the working directory back to the original
-    os.chdir(cwd)
+    # write the file out again
+    with open("../docker-compose.yaml", "w") as f:
+        f.write(filedata)
 
 
 if __name__ == "__main__":
