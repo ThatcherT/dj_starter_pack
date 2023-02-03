@@ -16,7 +16,7 @@ class Project:
 
     def __init__(self):
         self.asset_files = [
-            '.pre-commit-config.yaml'
+            '.pre-commit-config.yaml',
             "assets",
             "utils",
             ".gitignore",
