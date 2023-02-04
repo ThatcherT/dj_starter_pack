@@ -23,7 +23,6 @@ class Project:
             "README.md",
             "bang.py",
             ".git",
-            "Makefile",
         ]
         self.services = ["nginx", "postgres", "django"]
         self.site_name = ""
@@ -210,6 +209,8 @@ class Project:
                 filedata = f.read()
             filedata = filedata.replace("dj_starter_pack", self.project_name)
             filedata.replace("App0Config", f"{self._camel_casify(app)}Config")
+            with open(f"./{app}/apps.py", "w") as f:
+                f.write(filedata)
 
     def _env(self):
         """Creates .env file with required variables"""
@@ -270,6 +271,12 @@ class Project:
 
         with open("./requirements.txt", "w") as f:
             f.write(requirements_data)
+    
+    def _makefile(self):
+        """Adds a Makefile with the project name and folder structure"""
+        # move the makefile from assets to the project root
+        shutil.copy("./assets/extras/Makefile", "./Makefile")
+        
 
     def projectify(self):
         """Use the set configuration to create and manipulate the files for the project template"""
@@ -281,6 +288,7 @@ class Project:
         self._docker()
         self._env()
         self._requirements()
+        self._makefile()
 
     def destroy(self):
         """Deletes all of the files used to"""
