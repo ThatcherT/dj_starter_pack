@@ -15,4 +15,5 @@ NOTE: If this is your first time using Django, start a project using their fanta
 - Finish Makefile  
 - Generate README.md  
 - Generate LICENSE  
-- Generate .gitignore  
+- Generate .gitignore
+- File Cache for iterative builds
