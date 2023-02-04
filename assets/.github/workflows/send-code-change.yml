@@ -1,0 +1,22 @@
+name: Notify thatcherthornberry of Code Changes
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  notify-thatcherthornberry:
+    name: Notify thatcherthornberry of Code Changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Repository Dispatch to thatcherthornberry
+        run: |
+          curl \
+          -X POST \
+          -u "${{ secrets.PAT_USERNAME}}:${{ secrets.PAT_TOKEN }}" \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          https://api.github.com/repos/ThatcherT/thatcherthornberry/dispatches \
+          --data '{"event_type": "pull-trigger", "client_payload": {"project": "$PROJECT_NAME", "repo": "@github.com/ThatcherT/$PROJECT_NAME.git"}}'
+        # PAT_TOKEN is in the important folder

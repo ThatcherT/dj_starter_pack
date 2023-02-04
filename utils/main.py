@@ -278,6 +278,17 @@ class Project:
         shutil.copy("./assets/extras/Makefile", "./Makefile")
         
 
+    def _pipeline(self):
+        """Adds the Github Actions pipeline from ./assets/.github folder and replaces with the project name"""
+        # add the .github folder
+        shutil.copytree("./assets/.github", "./.github")
+        # replace the project name in the pipeline
+        with open("./.github/workflows/send-code-change.yml", "r") as f:
+            pipeline_data = f.read()
+        pipeline_data = pipeline_data.replace("$PROJECT_NAME", self.project_name)
+        with open("./.github/workflows/send-code-change.yml", "w") as f:
+            f.write(pipeline_data)
+
     def projectify(self):
         """Use the set configuration to create and manipulate the files for the project template"""
         self._copy_project()
@@ -289,9 +300,18 @@ class Project:
         self._env()
         self._requirements()
         self._makefile()
+        self._pipeline()
 
     def destroy(self):
         """Deletes all of the files used to"""
         self._readme()
         shutil.rmtree("./assets")
         shutil.rmtree("./utils")
+        im_done_done = input('Are you sure you are done? Remove the .git folder? (y/n)')
+        if im_done_done == 'y':
+            shutil.rmtree(".git")
+            print('TODO:')
+            print('Change the name of the root folder.')
+            print('Initalize git repository `git init`')
+            print('Set up pre-commit hooks `pre-commit install`')
+
