@@ -22,7 +22,7 @@ def aggregate(services, project_name):
             file_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
             yml["services"].update(file_yml["services"])
             yml["volumes"].update(file_yml.get("volumes", {}))
-    yml["version"] = 3
+    yml["version"] = "3"
     with open("../docker-compose.yaml", "w") as yml_compiled:
         yaml.dump(yml, yml_compiled, default_flow_style=False)
     with open("../docker-compose.yaml", "r") as f:

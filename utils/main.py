@@ -5,11 +5,7 @@ import shutil
 import secrets
 from utils.django_settings_config import EMAIL, REDIS_CACHE, RQ_SCHEDULER
 from utils.compose_aggregator import aggregate
-import time
-
-# TODO: import something for emojis in the terminal
-# TODO: import something for colors in the terminal
-
+import yaml
 
 class Project:
     "This small class facilitates the manipulation of assets to output a custom built project template"
@@ -294,6 +290,30 @@ class Project:
         """Adds a Makefile with the project name and folder structure"""
         # move the makefile from assets to the project root
         shutil.copy("./assets/extras/Makefile", "./Makefile")
+        # print working directory, list files
+        # replace the project name
+        print(os.getcwd())
+        print('files in current directory: ', os.listdir())
+
+    
+    def _compose_local(self):
+        """Modifies the command for the django service in the docker-compose.local.yml file"""
+        new_command = 'bash -c "python manage.py runserver 0.0.0.0:8000"'
+        ports = ["8000:8000"]
+        with open("./docker-compose.yaml", "r") as f:
+            compose_data = f.read()
+        # load into yaml
+        compose_data = yaml.load(compose_data, Loader=yaml.FullLoader)
+        # get service self.project_name
+        compose_data["services"][self.project_name]["command"] = new_command
+        compose_data["services"][self.project_name]["ports"] = ports
+        breakpoint()
+        # remove expose
+        del compose_data["services"][self.project_name]["expose"]
+        # write docker-compose.local.yml
+        with open("./docker-compose.local.yaml", "w") as f:
+            yaml.dump(compose_data, f)
+
 
     def _pipeline(self):
         """Adds the Github Actions pipeline from ./assets/.github folder and replaces with the project name"""
@@ -311,6 +331,7 @@ class Project:
         self._copy_project()
         self._copy_apps()
         aggregate(self.services, self.project_name)
+        self._compose_local()
         self._update_settings()
         self._nginx()
         self._docker()
