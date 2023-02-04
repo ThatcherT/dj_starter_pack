@@ -3,6 +3,7 @@
 import os
 import yaml
 
+
 def aggregate(services, project_name):
     """Takes a list of services and uses existing compose files to aggregate into single file"""
     # set the working directory to the directory of this file
@@ -31,6 +32,9 @@ def aggregate(services, project_name):
     # write the file out again
     with open("../docker-compose.yaml", "w") as f:
         f.write(filedata)
+
+    # change back to the original working directory
+    os.chdir(cwd)
 
 
 if __name__ == "__main__":

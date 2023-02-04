@@ -6,7 +6,7 @@ services:
     command: bash -c "
       python manage.py migrate &&
       python manage.py collectstatic --noinput &&
-      gunicorn $PROJECT_NAME.wsgi:application --bind 0.0.0.0:8001"
+      gunicorn $PROJECT_NAME.wsgi:application --bind 0.0.0.0:8000"
     expose:
       - 8001
     volumes:
@@ -15,3 +15,6 @@ services:
       - .env
     depends_on:
       - postgres
+
+volumes:
+  static_$PROJECT_NAME:

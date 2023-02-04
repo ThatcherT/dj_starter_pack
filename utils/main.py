@@ -16,7 +16,7 @@ class Project:
 
     def __init__(self):
         self.asset_files = [
-            '.pre-commit-config.yaml',
+            ".pre-commit-config.yaml",
             "assets",
             "utils",
             ".gitignore",
@@ -102,7 +102,6 @@ class Project:
     def _makefile(self):
         """Build project Makefile Replace dj_starter_kit makefile with project Makefile"""
         # TODO:
-        
 
     def _nginx(self):
         """Copies nginx.conf to project root, modifies file with updated vars"""

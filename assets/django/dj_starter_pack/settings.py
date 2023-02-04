@@ -93,7 +93,7 @@ DATABASES = {
         "NAME": config("DB_NAME", cast=str),
         "USER": config("POSTGRES_USER", cast=str),
         "PASSWORD": config("POSTGRES_PASSWORD", cast=str),
-        "HOST": "postgres", # this is the name of the container
+        "HOST": "postgres",  # this is the name of the container
         "PORT": 5432,
     }
 }
@@ -126,8 +126,8 @@ USE_I18N = True
 USE_TZ = True
 
 # static
-STATIC_URL = "/staticfiles/" # referenced in the nginx file
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") # referenced in docker-compose
+STATIC_URL = "/staticfiles/"  # referenced in the nginx file
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # referenced in docker-compose
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
