@@ -309,6 +309,7 @@ class Project:
         shutil.rmtree("./utils")
         im_done_done = input('Are you sure you are done? Remove the .git folder? (y/n)')
         if im_done_done == 'y':
+            shutil.rmtree('README.md')
             shutil.rmtree(".git")
             print('TODO:')
             print('Change the name of the root folder.')
