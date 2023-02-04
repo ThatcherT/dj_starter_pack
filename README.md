@@ -11,9 +11,8 @@ NOTE: If this is your first time using Django, start a project using their fanta
 ## TODO
 
 - Bootstrap  
+- Starter CSS
 - Finish Makefile  
-- Template Example  
-- View example  
 - Generate README.md  
 - Generate LICENSE  
 - Generate .gitignore  

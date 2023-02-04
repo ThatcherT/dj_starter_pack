@@ -200,6 +200,14 @@ class Project:
             with open(file, "w") as f:
                 f.write(filedata)
 
+        # fix urls.py
+        with open(f"./{self.project_name}/urls.py", "r") as f:
+            urls_data = f.read()
+        # replace app_0 with self.apps[0]
+        urls_data = urls_data.replace("app_0", self.apps[0])
+        with open(f"./{self.project_name}/urls.py", "w") as f:
+            f.write(urls_data)
+
     def _copy_apps(self):
         # copy the app_0 folder to the new project folder
         for app in self.apps:
@@ -210,6 +218,16 @@ class Project:
             filedata = filedata.replace("dj_starter_pack", self.project_name)
             filedata.replace("App0Config", f"{self._camel_casify(app)}Config")
             with open(f"./{app}/apps.py", "w") as f:
+                f.write(filedata)
+
+            with open(f"./{app}/views.py", "r") as f:
+                filedata = f.read()
+
+            # app/templates/index.html
+            with open(f"./{app}/templates/index.html", "r") as f:
+                filedata = f.read()
+            filedata = filedata.replace("app_0", app)
+            with open(f"./{app}/templates/index.html", "w") as f:
                 f.write(filedata)
 
     def _env(self):
