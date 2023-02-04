@@ -89,7 +89,7 @@ class Project:
         if redis == "y":
             self.services.append("redis")
             self.env_vars.append("REDIS_PASSWORD=")
-            redis_cache = input("5/8. Use Redis as a Cache? (y/n): ")
+            redis_cache = input("5/8. Use Redis as a cache? (y/n): ")
             if redis_cache == "y":
                 self.service_settings.append(REDIS_CACHE)
             rq_scheduler = input("6/8. Use Redis as scheduler? (y/n): ")
