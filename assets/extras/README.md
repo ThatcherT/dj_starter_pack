@@ -1,35 +1,16 @@
-<h1 align="center"> dj_starter_pack </h1>
-<h3 align="center"> dj_starter_pack_one_liner </h3>
+# dj_starter_pack
 
-<!-- TABLE OF CONTENTS -->
-<h2 id="table-of-contents">Table of Contents</h2>
+dj_starter_pack_one_liner
 
-<details open="open">
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#about-the-project"> ➤ About The Project</a></li>
-    <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
-    <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
-  </ol>
-</details>
+## Table of Contents
 
-<!-- ABOUT THE PROJECT -->
-<h2 id="about-the-project">About The Project</h2>
+* [About The Project](#about-the-project)
+* [Prerequisites](#prerequisites)
 
-<p align="justify"> 
-  TODO
-</p>
+## About The Project
 
-<!-- PREREQUISITES -->
-<h2 id="prerequisites">Prerequisites</h2>
+TODO
 
-<p align="justify"> 
-  See the Makefile for instructions around installing.
-</p>
+## Prerequisites
 
-<!-- FOLDER STRUCTURE -->
-<h2 id="folder-structure">Folder Structure</h2>
-
-```
-dj_starter_pack_folder_structure
-```
+* Docker

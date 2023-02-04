@@ -262,7 +262,7 @@ class Project:
     def _readme(self):
         """Creates a README.md file with the project name and folder structure"""
         project_desc = input("One sentence to describer this project: ")
-        with open("../assets/extras/README.md", "r") as f:
+        with open("./assets/extras/README.md", "r") as f:
             readme_data = f.read()
         readme_data = readme_data.replace(
             "dj_starter_pack_folder_structure", self._get_folder_structure()
