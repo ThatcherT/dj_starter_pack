@@ -271,12 +271,11 @@ class Project:
 
         with open("./requirements.txt", "w") as f:
             f.write(requirements_data)
-    
+
     def _makefile(self):
         """Adds a Makefile with the project name and folder structure"""
         # move the makefile from assets to the project root
         shutil.copy("./assets/extras/Makefile", "./Makefile")
-        
 
     def _pipeline(self):
         """Adds the Github Actions pipeline from ./assets/.github folder and replaces with the project name"""
@@ -307,12 +306,11 @@ class Project:
         self._readme()
         shutil.rmtree("./assets")
         shutil.rmtree("./utils")
-        im_done_done = input('Are you sure you are done? Remove the .git folder? (y/n)')
-        if im_done_done == 'y':
-            shutil.rmtree('README.md')
+        im_done_done = input("Are you sure you are done? Remove the .git folder? (y/n)")
+        if im_done_done == "y":
+            shutil.rmtree("README.md")
             shutil.rmtree(".git")
-            print('TODO:')
-            print('Change the name of the root folder.')
-            print('Initalize git repository `git init`')
-            print('Set up pre-commit hooks `pre-commit install`')
-
+            print("TODO:")
+            print("Change the name of the root folder.")
+            print("Initalize git repository `git init`")
+            print("Set up pre-commit hooks `pre-commit install`")
