@@ -13,6 +13,7 @@ pathspec==0.10.3
 platformdirs==2.6.2
 pre-commit==2.21.0
 psycopg2-binary==2.9.5
+python-decouple==3.7
 PyYAML==6.0
 sqlparse==0.4.3
 tomli==2.0.1

@@ -26,7 +26,12 @@ class Project:
         self.service_settings = []
         self.project_name = ""
         self.apps = []
-        pass
+        self.env_vars = [
+            "DEBUG=True",
+            "POSTGRES_PASSWORD=",
+            "POSTGRES_USER=",
+            f"DJANGO_SECRET_KEY={secrets.token_urlsafe()}",
+        ]
 
     def welcome(self):
         welcome_messages = [
@@ -83,16 +88,17 @@ class Project:
         redis = input("4/8. Redis? (y/n): ")
         if redis == "y":
             self.services.append("redis")
+            self.env_vars.append("REDIS_PASSWORD=")
             redis_cache = input("5/8. Use Redis as a Cache? (y/n): ")
             if redis_cache == "y":
                 self.service_settings.append(REDIS_CACHE)
-                pass
             rq_scheduler = input("6/8. Use Redis as scheduler? (y/n): ")
             if rq_scheduler == "y":
                 self.services.append("scheduler")
                 self.service_settings.append(RQ_SCHEDULER)
         email = input("7/8. Email? (y/n): ")
         if email == "y":
+            self.env_vars.extend(["EMAIL_HOST_USER=", "EMAIL_HOST_PASSWORD="])
             self.service_settings.append(EMAIL)
 
     def _makefile(self):
@@ -145,14 +151,15 @@ class Project:
         for service in self.service_settings:
             settings_data += "\n" + service + "\n"
         # add apps to INSTALLED_APPS
-        installed_apps = settings_data.split("INSTALLED_APPS = [")[1].split("]")[0]
-        app_lst = installed_apps.split(",")
-        for app in self.apps:
-            app_lst.append(f'"{app}.apps.{self._camel_casify(app)}Config"')
+        installed_apps_str = settings_data.split("INSTALLED_APPS = [")[1].split("]")[0]
+        app_lst = [app for app in installed_apps_str.split(",") if app.strip()]
+        app_lst.extend([f'"{app}"' for app in self.apps])
+        app_lst.append('')
         if "scheduler" in self.services:
             app_lst.append('"django_rq"')
         app_lst = ", ".join(app_lst)
-        settings_data = settings_data.replace(installed_apps, app_lst)
+        # app_lst.append('')
+        settings_data = settings_data.replace(installed_apps_str, app_lst)
         with open(f"./{self.project_name}/settings.py", "w") as f:
             f.write(settings_data)
 
@@ -182,7 +189,7 @@ class Project:
         if os.path.exists("./manage.py"):
             os.remove("./manage.py")
         shutil.copy("./assets/django/manage.py", "./manage.py")
-        # rename files
+        # rename filese
         files_to_change = [
             "./manage.py",
             f"./{self.project_name}/settings.py",
@@ -192,10 +199,10 @@ class Project:
         ]
         for file in files_to_change:
             with open(file, "r") as f:
-                filedata = f.read()
-            filedata = filedata.replace("dj_starter_pack", self.project_name)
+                file_data = f.read()
+            file_data = file_data.replace("dj_starter_pack", self.project_name)
             with open(file, "w") as f:
-                f.write(filedata)
+                f.write(file_data)
 
         # fix urls.py
         with open(f"./{self.project_name}/urls.py", "r") as f:
@@ -211,35 +218,28 @@ class Project:
             shutil.copytree("./assets/django/app_0", f"./{app}")
             # project_name replacement rename files
             with open(f"./{app}/apps.py", "r") as f:
-                filedata = f.read()
-            filedata = filedata.replace("dj_starter_pack", self.project_name)
-            filedata.replace("App0Config", f"{self._camel_casify(app)}Config")
+                file_data = f.read()
+            file_data = file_data.replace("dj_starter_pack", self.project_name)
+            file_data = file_data.replace("App0Config", f"{self._camel_casify(app)}Config")
+            file_data =  file_data.replace("app_0", app)
             with open(f"./{app}/apps.py", "w") as f:
-                f.write(filedata)
+                f.write(file_data)
 
             with open(f"./{app}/views.py", "r") as f:
-                filedata = f.read()
+                file_data = f.read()
 
             # app/templates/index.html
             with open(f"./{app}/templates/index.html", "r") as f:
-                filedata = f.read()
-            filedata = filedata.replace("app_0", app)
+                file_data = f.read()
+            file_data = file_data.replace("$PROJECT_NAME", self.project_name)
             with open(f"./{app}/templates/index.html", "w") as f:
-                f.write(filedata)
+                f.write(file_data)
 
     def _env(self):
         """Creates .env file with required variables"""
         with open("./.env", "w") as f:
-            f.write("DJANGO_SECRET_KEY=" + secrets.token_urlsafe())
-            f.write("DEBUG=True")
-            f.write("DB_NAME=")
-            f.write("POSTGRES_USER=")
-            f.write("POSTGRES_PASSWORD=")
-            if "email" in self.service_settings:
-                f.write("EMAIL_HOST_USER=")
-                f.write("EMAIL_HOST_PASSWORD=")
-            if "redis" in self.services:
-                f.write("REDIS_PASSWORD=")
+            f.write(f"POSTGRES_DB={self.project_name}\n")
+            [f.write(var + "\n") for var in self.env_vars]
 
     def _get_folder_structure(self):
         """
@@ -310,7 +310,10 @@ class Project:
         # get service self.project_name
         compose_data["services"][self.project_name]["command"] = new_command
         compose_data["services"][self.project_name]["ports"] = ports
-        breakpoint()
+        # append to volumes
+        compose_data["services"][self.project_name]["volumes"].append(
+            f".:/app/{self.project_name}"
+        )
         # remove expose
         del compose_data["services"][self.project_name]["expose"]
         # write docker-compose.local.yml
