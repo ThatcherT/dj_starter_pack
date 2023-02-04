@@ -7,6 +7,7 @@ from utils.django_settings_config import EMAIL, REDIS_CACHE, RQ_SCHEDULER
 from utils.compose_aggregator import aggregate
 import yaml
 
+
 class Project:
     "This small class facilitates the manipulation of assets to output a custom built project template"
 
@@ -289,13 +290,15 @@ class Project:
     def _makefile(self):
         """Adds a Makefile with the project name and folder structure"""
         # move the makefile from assets to the project root
-        shutil.copy("./assets/extras/Makefile", "./Makefile")
+        shutil.copy(
+            "./assets/extras/Makefile",
+            "./Makefile",
+        )
         # print working directory, list files
         # replace the project name
         print(os.getcwd())
-        print('files in current directory: ', os.listdir())
+        print("files in current directory: ", os.listdir())
 
-    
     def _compose_local(self):
         """Modifies the command for the django service in the docker-compose.local.yml file"""
         new_command = 'bash -c "python manage.py runserver 0.0.0.0:8000"'
@@ -313,7 +316,6 @@ class Project:
         # write docker-compose.local.yml
         with open("./docker-compose.local.yaml", "w") as f:
             yaml.dump(compose_data, f)
-
 
     def _pipeline(self):
         """Adds the Github Actions pipeline from ./assets/.github folder and replaces with the project name"""
