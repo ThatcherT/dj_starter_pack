@@ -154,9 +154,9 @@ class Project:
         installed_apps_str = settings_data.split("INSTALLED_APPS = [")[1].split("]")[0]
         app_lst = [app for app in installed_apps_str.split(",") if app.strip()]
         app_lst.extend([f'"{app}"' for app in self.apps])
-        app_lst.append('')
         if "scheduler" in self.services:
             app_lst.append('"django_rq"')
+        app_lst.append('')
         app_lst = ", ".join(app_lst)
         # app_lst.append('')
         settings_data = settings_data.replace(installed_apps_str, app_lst)
@@ -224,6 +224,8 @@ class Project:
             file_data =  file_data.replace("app_0", app)
             with open(f"./{app}/apps.py", "w") as f:
                 f.write(file_data)
+            
+            os.rename(f"./{app}/static/app_0", f"./{app}/static/{app}")
 
             with open(f"./{app}/views.py", "r") as f:
                 file_data = f.read()
@@ -294,10 +296,6 @@ class Project:
             "./assets/extras/Makefile",
             "./Makefile",
         )
-        # print working directory, list files
-        # replace the project name
-        print(os.getcwd())
-        print("files in current directory: ", os.listdir())
 
     def _compose_local(self):
         """Modifies the command for the django service in the docker-compose.local.yml file"""
@@ -314,6 +312,8 @@ class Project:
         compose_data["services"][self.project_name]["volumes"].append(
             f".:/app/{self.project_name}"
         )
+        # remove 443 port from nginx
+        compose_data["services"]["nginx"]["ports"] = ["80:80"]
         # remove expose
         del compose_data["services"][self.project_name]["expose"]
         # write docker-compose.local.yml
