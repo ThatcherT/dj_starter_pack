@@ -8,7 +8,7 @@ services:
       python manage.py collectstatic --noinput &&
       gunicorn $PROJECT_NAME.wsgi:application --bind 0.0.0.0:8000"
     expose:
-      - 8001
+      - 8000
     volumes:
       - static_$PROJECT_NAME:/app/$PROJECT_NAME/staticfiles
     env_file:
