@@ -4,7 +4,7 @@ services:
       image: nginx:1.15-alpine
       volumes:
         - static_$PROJECT_NAME:/app/$PROJECT_NAME/staticfiles
-        - ./nginx:/etc/nginx/conf.d # this is how we use custom nginx build
+        - ./nginx/$ENV:/etc/nginx/conf.d # this is how we use custom nginx build
       ports:
         - "80:80"
         - "443:443"

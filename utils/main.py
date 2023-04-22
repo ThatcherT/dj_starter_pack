@@ -115,11 +115,13 @@ class Project:
         # replace vars
         nginx_data_local = nginx_data_local.replace("$PROJECT_NAME", self.project_name)
         nginx_data_local = nginx_data_local.replace("$SITE_NAME", self.site_name)
+        nginx_data_local = nginx_data_local.replace("$ENV", "local")
+        nginx_data_local
         with open("./assets/nginx/prod/nginx.conf", "r") as f:
             nginx_data_prod = f.read()
         # replace vars
         nginx_data_prod = nginx_data_prod.replace("$PROJECT_NAME", self.project_name)
-        nginx_data_prod = nginx_data_prod.replace("$SITE_NAME", self.site_name)
+        nginx_data_prod = nginx_data_prod.replace("$ENV", "prod")
 
         # create folders
         os.mkdir("./nginx")
